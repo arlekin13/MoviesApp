@@ -1,0 +1,5 @@
+.app {
+  display: flex;
+  justify-content: center;
+  padding-left: 25px !important;
+}
