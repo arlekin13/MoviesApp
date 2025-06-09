@@ -16,18 +16,34 @@
 }
 
 .movie-card__content {
-  width: 223px;
   display: flex;
   flex-direction: column;
 }
-
+.movie-card__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
 .movie-card__title {
-  margin: 0 0 5px 0;
+  margin: 0;
   font-weight: 400;
-  font-size: 20px;
+  font-size: 20px !important;
   line-height: 28px;
   letter-spacing: 0%;
   vertical-align: middle;
+  max-width: 70%;
+}
+.movie-card__rating {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  font-size: 14px;
+  color: black;
+  border: 2px solid;
 }
 
 .movie-card__release-date {
@@ -37,11 +53,12 @@
 }
 
 .movie-card__genres {
-  margin-bottom: 7px;
+  margin-bottom: 5px;
 }
 
 .movie-card__genre {
-  margin-right: 8px;
+  margin-right: 5px;
+  margin-top: 5px;
   font-size: 12px;
 }
 
@@ -50,12 +67,23 @@
   font-size: 12px;
   line-height: 22px;
   letter-spacing: 0px;
+  margin-bottom: 10px;
 }
 
 .rating-stars {
   margin-top: 10px;
 }
 
-.rating-stars .ant-rate-star {
-  margin-inline-end: 0 !important;
+.ant-rate .ant-rate-star:not(:last-child) {
+  margin-inline-end: 1px;
+}
+.ant-tabs {
+  display: flex;
+
+  align-items: center;
+
+  align-self: center;
+}
+.ant-card .ant-card-body {
+  padding: 10px 10px 10px 20px;
 }

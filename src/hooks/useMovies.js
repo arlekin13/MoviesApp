@@ -1,52 +1,47 @@
 import { useState, useEffect, useCallback } from 'react'
-import { searchMovies, getPopularMovies } from '../api/tmdb'
+import { searchMovies, getPopularMovies, getRatedMovies } from '../api/tmdb'
 
-const useMovies = (search) => {
-  const [currentPage, setCurrentPage] = useState(1)
+const useMovies = (search, guestSessionId, fetchRated = false, page = 1) => {
+  const [currentPage, setCurrentPage] = useState(page)
   const [totalPages, setTotalPages] = useState(0)
   const [totalResults, setTotalResults] = useState(0)
   const [movies, setMovies] = useState([])
   const [loading, setLoading] = useState(true)
+  const [ratedMovies, setRatedMovies] = useState({})
 
-  const fetchPopularMovies = useCallback(async () => {
+  const fetchData = useCallback(async () => {
     setLoading(true)
     try {
-      const data = await getPopularMovies()
-      setMovies(data || [])
+      let data
+      if (fetchRated && guestSessionId) {
+        data = await getRatedMovies(guestSessionId, page)
+        const newRatedMovies = {}
+        data.results.forEach((movie) => {
+          newRatedMovies[movie.id] = movie.rating
+        })
+        setRatedMovies(newRatedMovies)
+      } else if (search) {
+        data = await searchMovies(search, page)
+      } else {
+        data = await getPopularMovies(page)
+      }
+      setMovies(data?.results || [])
+      setTotalPages(data?.total_pages || 0)
+      setTotalResults(data?.total_results || 0)
+      setCurrentPage(page)
     } catch (error) {
-      // console.error("не получили поп кина:", error);
+      console.error('ошибка феча фильма:', error)
       setMovies([])
+      setTotalPages(0)
+      setTotalResults(0)
     } finally {
       setLoading(false)
     }
-  }, [])
+  }, [search, guestSessionId, fetchRated, page])
 
   useEffect(() => {
-    const fetchMovies = async () => {
-      setLoading(true)
-
-      try {
-        const data = await searchMovies(search, currentPage)
-
-        setMovies(data.result || [])
-        setTotalPages(data.totalPages)
-        setTotalResults(data.totalResults)
-      } catch (error) {
-        // console.error("не получили кина:", error);
-        setMovies([])
-        setTotalPages(0)
-        setTotalResults(0)
-      } finally {
-        setLoading(false)
-      }
-    }
-
-    if (search) {
-      fetchMovies()
-    } else {
-      fetchPopularMovies()
-    }
-  }, [search, currentPage, fetchPopularMovies])
+    fetchData()
+  }, [fetchData])
 
   return {
     movies,
@@ -55,7 +50,7 @@ const useMovies = (search) => {
     loading,
     currentPage,
     setCurrentPage,
-    fetchPopularMovies,
+    ratedMovies,
   }
 }
 export default useMovies
