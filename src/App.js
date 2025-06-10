@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback, useRef } from 'react'
+import React, { useState, useEffect, useCallback,  } from 'react'
 import { ConfigProvider, Spin, Alert, Pagination, Tabs } from 'antd'
 import MoviesList from './components/MoviesList/MoviesList'
 import SearchPanel from './components/SearchPanel/SearchPanel'
@@ -99,14 +99,15 @@ function App() {
         }}
       >
         <div className="app">
-          {!isOnline && <Alert message="Нет соединения с интернетом" type="error" />}
+          {!isOnline && <Alert message='Нет соединения с интернетом'        
+            type="error"  />}
           <Online>
             {genreError && <Alert message={genreError} type="error" />}
             <Tabs defaultActiveKey="1" onChange={handleTabChange}>
               <TabPane tab="Search" key="1">
                 <Spin spinning={loading}>
                   <SearchPanel onSearch={handleSearch} />
-                  {movies.length === 0 && !loading && <Alert message="КИНА НЕ БУДЕТ!" type="info" />}
+                  {movies.length === 0 && !loading && <Alert message="такого еще не сняли!" type="info" />}
 
                   <MoviesList movies={movies} guestSessionId={guestSessionId} ratedMovies={ratedMovies} />
 
