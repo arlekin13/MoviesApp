@@ -1,5 +1,5 @@
 import React, { useContext } from 'react'
-import { Card, Tag, Typography } from 'antd'
+import { Card, Tag, Typography, Alert } from 'antd'
 import './MovieCard.css'
 
 import PropTypes from 'prop-types'
@@ -9,10 +9,25 @@ import GenreContext from '../Genres/GenresContext'
 
 const { Text, Title } = Typography
 
-const MovieCard = ({ movie, guestSessionId, ratedMovies }) => {
-  const { title, release_date, genre_ids, overview, poster_path, vote_average, id } = movie
-  const genres = useContext(GenreContext)
+const MovieCard = ({ movie, guestSessionId, ratedMovies = {} }) => {
+  const genres = useContext(GenreContext) || []
+
+  if (!movie) {
+    return <Alert message="Данные фильма не загружены" type="error" />
+  }
+
+  const {
+    title = 'Без названия',
+    release_date,
+    genre_ids = [],
+    overview = '',
+    poster_path,
+    vote_average = 0,
+    id,
+  } = movie
+
   const userRating = ratedMovies[id] || 0
+
   let formattedDate = ''
   try {
     formattedDate = format(parse(release_date, 'yyyy-MM-dd', new Date()), 'MMMM d, yyyy')

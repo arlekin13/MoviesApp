@@ -1,13 +1,14 @@
 import axios from 'axios'
 
-const API_KEY = '8a9e3ee1943e2bc590ae088fdd26df31'
+// const API_KEY = '8a9e3ee1943e2bc590ae088fdd26df31'
 
 const tmdb = axios.create({
   baseURL: 'https://api.themoviedb.org/3',
   params: {
-    api_key: API_KEY,
+    api_key: '8a9e3ee1943e2bc590ae088fdd26df31',
     language: 'en-US',
   },
+  timeout: 5000,
 })
 
 export const getPopularMovies = async () => {
@@ -15,7 +16,8 @@ export const getPopularMovies = async () => {
     const response = await tmdb.get('/movie/popular')
     return response.data
   } catch (error) {
-    return { results: [], total_pages: 0, total_results: 0 }
+    console.error('Ошибка получения популярных фильмов:', error)
+    throw error
   }
 }
 
@@ -30,7 +32,7 @@ export const searchMovies = async (search, page = 1) => {
     return response.data
   } catch (error) {
     console.error('ошибка поиска:', error)
-    return { results: [], total_pages: 0, total_results: 0 }
+    throw error
   }
 }
 
@@ -40,11 +42,15 @@ export const createGuestSession = async () => {
     return response.data
   } catch (error) {
     console.error('ошибка создания гостев:', error)
-    return null
+    throw error
   }
 }
 
 export const getRatedMovies = async (guestSessionId, page = 1) => {
+  if (!guestSessionId) {
+    console.error('Отсутствует guestSessionId')
+    return { results: [], total_pages: 0, total_results: 0 }
+  }
   try {
     const response = await tmdb.get(`/guest_session/${guestSessionId}/rated/movies`, {
       params: { page: page },
@@ -58,6 +64,10 @@ export const getRatedMovies = async (guestSessionId, page = 1) => {
 }
 
 export const postRatedMovies = async (movieId, rating, guestSessionId) => {
+  if (!guestSessionId || !movieId) {
+    console.error('Не хватает параметров для оценки')
+    return null
+  }
   try {
     const response = await tmdb.post(
       `/movie/${movieId}/rating`,
@@ -71,7 +81,7 @@ export const postRatedMovies = async (movieId, rating, guestSessionId) => {
     return response.data
   } catch (error) {
     console.error('Ошибка отправки рейтинга:', error)
-    return null
+    throw error
   }
 }
 
@@ -86,6 +96,7 @@ export const getGenres = async () => {
 }
 
 export const getMovieRating = async (movieId, guestSessionId) => {
+  if (!guestSessionId || !movieId) return null
   try {
     const response = await tmdb.get(`/movie/${movieId}/rating`, {
       params: {
@@ -97,7 +108,7 @@ export const getMovieRating = async (movieId, guestSessionId) => {
     if (error.response && error.response.status === 404) {
       return null
     }
-    console.error('ошибка феча рейтинга фильма:', error)
+    console.error('ошибка получения рейтинга фильма:', error)
     return null
   }
 }
